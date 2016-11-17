@@ -1,16 +1,36 @@
 import React from 'react';
-import UserList from '../containers/user-list';
-import UserDetails from '../containers/user-detail';
-require('../../scss/style.scss');
+import {Component} from 'react';
+import TrackWidget from './TrackWidget';
 
-const App = () => (
-    <div>
-        <h2>User List</h2>
-        <UserList />
-        <hr />
-        <h2>User Details</h2>
-        <UserDetails />
-    </div>
-);
+class App extends Component{
+
+  constructor(){
+    super();
+    this.checkEnter = this.checkEnter.bind(this);
+    this.state = ({orderId : 3515342});
+  }
+
+  checkEnter(event){
+    //Make validation that card name is not empty
+      if(this.refs.orderId.value.trim() == "");
+      else{//If value is not empty, enter is pressed
+        if(event.keyCode == 13){
+          console.log("enter is pressed");
+          this.setState({orderId: this.refs.orderId.value.trim()});
+        }
+
+      }
+  }
+
+  render(){
+    return(
+      <div>
+        <input type="text" name="orderId" ref="orderId" placeholder="orderId" onKeyDown={this.checkEnter}/>
+        <TrackWidget orderId={this.state.orderId}/>
+      </div>
+    );
+  }
+
+}
 
 export default App;

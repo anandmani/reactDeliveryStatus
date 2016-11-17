@@ -1,0 +1,105 @@
+https://www.clickpost.in/api/v2/track-order/?username=testuser&key=2e9b19ac-8e1f-41ac-a35b-4cd23f41ae17&waybill=3515341
+
+{
+  "result": {
+    "3515341": {
+      "scans": [
+        {
+          "status": "Delivered on 03 Nov 16 - Signed by sign",
+          "remark": "Delivered on 03 Nov 16 - Signed by sign",
+          "date": "2016-11-03T08:10:56Z",
+          "location": "MUMBAI, MUMBAI"
+        },
+        {
+          "status": "Out For Delivery",
+          "remark": "Out For Delivery",
+          "date": "2016-10-31T13:29:24Z",
+          "location": "MUMBAI, MUMBAI"
+        },
+        {
+          "status": "Arrived at",
+          "remark": "Arrived at",
+          "date": "2016-10-29T12:31:05Z",
+          "location": "MUMBAI, MUMBAI"
+        },
+        {
+          "status": "In Transit to",
+          "remark": "In Transit to",
+          "date": "2016-10-28T00:15:32Z",
+          "location": "MUMBAI, MUMBAI"
+        },
+        {
+          "status": "Picked up and Booking processed",
+          "remark": "Picked up and Booking processed",
+          "date": "2016-10-27T22:15:13Z",
+          "location": "SOUTH DELHI, DELHI"
+        },
+        {
+          "status": "In Transit to",
+          "remark": "In Transit to",
+          "date": "2016-10-27T22:18:57Z",
+          "location": "DELHI, DELHI"
+        },
+        {
+          "status": "Arrived in",
+          "remark": "Arrived in",
+          "date": "2016-10-27T22:19:18Z",
+          "location": "DELHI, DELHI"
+        },
+        {
+          "status": "In Transit to",
+          "remark": "In Transit to",
+          "date": "2016-10-27T22:18:57Z",
+          "location": "DELHI, DELHI"
+        },
+        {
+          "status": "Arrived in",
+          "remark": "Arrived in",
+          "date": "2016-10-27T22:19:18Z",
+          "location": "DELHI, DELHI"
+        },
+        {
+          "status": "Arrived in",
+          "remark": "Arrived in",
+          "date": "2016-10-27T22:19:18Z",
+          "location": "DELHI, DELHI"
+        },
+        {
+          "status": "OrderPlaced",
+          "remark": "OrderPlaced",
+          "date": "2016-10-26T16:33:23.650Z",
+          "location": "None"
+        }
+      ],
+      "lateststatus": {
+        "status": "Delivered on 03 Nov 16 - Signed by sign",
+        "remark": "Delivered on 03 Nov 16 - Signed by sign",
+        "date": "2016-11-03T08:10:56Z",
+        "location": "MUMBAI, MUMBAI",
+        "type": "Delivered"
+      },
+      "shipment_detail": {
+        "pickup_pincode": "110019",
+        "pickup_address": "Pyck - 8/1 (Basement), Kalkaji Extension, New Delhi - 110019 Contact: 011-26223118",
+        "pickup_phone": "0112622311",
+        "drop_address": "58/5, shanta smruti, veera desai road andheri west, behind courtyard restaurant",
+        "order_type": "PREPAID",
+        "drop_pincode": "400053",
+        "drop_name": "sneha shenoy",
+        "courier_partner": "InnovEx",
+        "length": 23,
+        "pickup_name": "Felurian Technology Pvt Ltd",
+        "breadth": 22,
+        "drop_phone": "9819125985",
+        "height": 12,
+        "cod_value": 0,
+        "weight": 270
+      }
+    }
+  },
+  "meta": {
+    "status": 200,
+    "success": true,
+    "message": "SUCCESS"
+  }
+}
