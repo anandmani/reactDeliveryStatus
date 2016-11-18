@@ -1,5 +1,6 @@
 import React from 'react';
 import {Component} from 'react';
+import {OverlayTrigger,Popover} from 'react-bootstrap';
 var moment = require ('moment');
 var fileUrl = require('../../../DummyResponse.txt');
 //----
@@ -45,6 +46,7 @@ class TrackWidget extends Component{
     this.key = "2e9b19ac-8e1f-41ac-a35b-4cd23f41ae17";
     this.orderJSON = {};
     this.fetchJSON = this.fetchJSON.bind(this);
+    this.renderOrderScans = this.renderOrderScans.bind(this);
     this.state = {orderJSON: null};
   }
 
@@ -78,17 +80,36 @@ class TrackWidget extends Component{
     }
   }
 
+  renderOrderScans(arr){
+    return arr.map((obj,index)=>{
+      const dateObj = moment.utc(obj.date);
+      const popover = (
+        <Popover id="popover-trigger-hover-focus" title={`${obj["status"]}`}>
+          {dateObj.format("dddd, MMMM Do YYYY, h:mm:ss a")}
+          <br/><br/>
+          {obj["location"]}
+        </Popover>);
+      return(
+        <OverlayTrigger key={index} trigger={['hover', 'focus']} placement="bottom" overlay={popover}>
+          <li className="orderScan_ListElement" style={{left: `${(150/(arr.length+1))*(index+1)}px`}} onClick={()=>{console.log(obj);}}></li>
+        </OverlayTrigger>
+      )
+    });
+
+  }
 
   render(){
     console.log("Rendering widget, order id is "+this.props.orderId);
     if(this.state.orderJSON != null && parseInt(Object.keys(this.state.orderJSON["result"])[0])==this.props.orderId){  //The first part checks if JSON is not empty.  The second part checks if JSON for new orderId has been fetched, the condition fails if the JSON belongs to the previous orderId
       console.log(this.state.orderJSON["result"][`${this.props.orderId}`]);
       var scansArray = [...this.state.orderJSON["result"][`${this.props.orderId}`]["scans"]];
+      var approvalArray = null;
+      var transitionArray = null;
+      var deliveryArray = null;
+
       //Sorting Array
       scansArray.sort((obj1,obj2)=>{
-        //moment.utc() to convert date string to moment obj
-        //obj1<obj2 return -1
-        //date1.diff(date) returns positive if date1 < date2
+        //moment.utc() to convert date string to moment obj    //obj1<obj2 return -1      //date1.diff(date) returns positive if date1 < date2
         if(moment.utc(obj1.date).diff( moment.utc(obj2.date) ) <= 0){
           return -1;
         }
@@ -96,6 +117,7 @@ class TrackWidget extends Component{
           return 1;
         }
       });
+
       //Removing duplicates in the Array //Immediately invoked function
       (function removeDuplicates(){
         console.log("removing duplicates");
@@ -106,54 +128,107 @@ class TrackWidget extends Component{
           }
         }
       })();
+
       console.log("Sorted, duplicate free array: ",scansArray);
+
+      //Splitting scanArray into approval, transition and delivery arrays
+      (function splitArray(){
+        console.log("Splitting scanArray");
+        for(var i =0; i<scansArray.length; i++){
+          if(scansArray[i].remark.includes("Picked up")){
+            approvalArray = scansArray.splice(0,i+1); //splice affects scansArray itself, therefore need to reset i
+            i=0;
+          }
+          if(scansArray[i].remark.includes("Out For Delivery")){
+            transitionArray = scansArray.splice(0,i);
+            deliveryArray = scansArray;
+            break;
+          }
+        }
+      })();
+
+      console.log("approval, transition, delivery Arrays",approvalArray,transitionArray,deliveryArray);
 
       return(
         <div id="orderStatus">
+          <div id="orderDetailsHeader">Shipment details</div>
           <div id="orderDetails">
-            <pre>
-              Shipment Details:
-              <br/>
-              <br/>
-              {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_name"]}
-              <br/>
-              {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_address"]}
-              <br/>
-              <br/>
-              {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_name"]}
-              <br/>
-              {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_address"]}
-              <br/>
-              <br/>
-              Box: {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["length"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["breadth"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["height"]} cm               {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["weight"]} gm
-              <br/>
-              <br/>
-              Courier Partner: {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["courier_partner"]}
-            </pre>
+            <table>
+                <tr>
+                  <td><strong>From</strong></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_name"]}</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_address"]}</td>
+                </tr>
+                <tr>
+                  <td><strong>To</strong></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_name"]}</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_address"]}</td>
+                </tr>
+                <tr>
+                  <td><strong>Box</strong></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["length"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["breadth"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["height"]}cm; {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["weight"]}gm</td>
+                </tr>
+                <tr>
+                  <td><strong>Courier Partner</strong></td>
+                  <td> {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["courier_partner"]}</td>
+                </tr>
+            </table>
+          </div>
+          <div id="trackBarHeaders">
+            <div className="trackBarHeader">Approval</div>
+            <div className="trackBarHeader">Transition</div>
+            <div className="trackBarHeader">Delivery</div>
           </div>
           <ul id="trackBar">
             <li id="trackBarApproval">
               <ul>
-                <li className="orderScan_ListElement"></li>
-                  <li className="orderScan_ListElement"></li>
+                {this.renderOrderScans(approvalArray)}
               </ul>
             </li>
 
             <li id="trackBarTransition">
               <ul>
-                <li className="orderScan_ListElement"></li>
+                {this.renderOrderScans(transitionArray)}
               </ul>
             </li>
 
             <li id="trackBarDelivery">
               <ul>
-                <li className="orderScan_ListElement"></li>
+                {this.renderOrderScans(deliveryArray)}
               </ul>
             </li>
           </ul>
+          <div id="latestStatusHeader">Latest status</div>
+          <div id="latestStatus">
+            <table>
+              <tr>
+                <td><strong>Type: </strong></td>
+                <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["type"]}</td>
+              </tr>
+              <tr>
+                <td><strong>Status: </strong></td>
+                <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["status"]}</td>
+              </tr>
+              <tr>
+              <td><strong>Time: </strong></td>
+              <td>{ moment.utc(this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["date"]).format("dddd, MMMM Do YYYY, h:mm:ss a")}</td>
+              </tr>
+              <tr>
+              <td><strong>Location: </strong></td>
+              <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["location"]}</td>
+              </tr>
+            </table>
+          </div>
         </div>
       );
     }
+
     else{
       return(
         <div id="orderStatus">Enter valid orderId</div>

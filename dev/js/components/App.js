@@ -2,6 +2,7 @@ import React from 'react';
 import {Component} from 'react';
 import TrackWidget from './TrackWidget';
 require('../../css/style.css');
+require('../../../node_modules/bootstrap/dist/css/bootstrap.css')
 
 class App extends Component{
 
@@ -26,7 +27,7 @@ class App extends Component{
   render(){
     return(
       <div>
-        <input type="text" name="orderId" ref="orderId" placeholder="orderId" onKeyDown={this.checkEnter}/>
+        <input type="text" name="orderId" ref="orderId" placeholder="orderId" defaultValue="3515341" onKeyDown={this.checkEnter}/>
         <TrackWidget orderId={this.state.orderId}/>
       </div>
     );
