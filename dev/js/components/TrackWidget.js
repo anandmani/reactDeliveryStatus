@@ -115,12 +115,12 @@ class TrackWidget extends Component{
               Shipment Details:
               <br/>
               <br/>
-              From: {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_name"]}
+              {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_name"]}
               <br/>
               {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_address"]}
               <br/>
               <br/>
-              To: {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_name"]}
+              {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_name"]}
               <br/>
               {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_address"]}
               <br/>
@@ -131,19 +131,26 @@ class TrackWidget extends Component{
               Courier Partner: {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["courier_partner"]}
             </pre>
           </div>
-          <div id="trackBar">
-            <ol id="trackBarApproval">
+          <ul id="trackBar">
+            <li id="trackBarApproval">
+              <ul>
+                <li className="orderScan_ListElement"></li>
+                  <li className="orderScan_ListElement"></li>
+              </ul>
+            </li>
 
-            </ol>
+            <li id="trackBarTransition">
+              <ul>
+                <li className="orderScan_ListElement"></li>
+              </ul>
+            </li>
 
-            <ol id="trackBarTransition">
-
-            </ol>
-
-            <ol id="trackBarDelivery">
-
-            </ol>
-          </div>
+            <li id="trackBarDelivery">
+              <ul>
+                <li className="orderScan_ListElement"></li>
+              </ul>
+            </li>
+          </ul>
         </div>
       );
     }
