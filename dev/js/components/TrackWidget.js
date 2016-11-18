@@ -53,8 +53,8 @@ class TrackWidget extends Component{
   fetchJSON(orderId){
       console.log("Making Get Call to Fetch Order Status JSON");
       var getOrder = new XMLHttpRequest();
-      // var url = `https://www.clickpost.in/api/v2/track-order/?username=${this.username}&key=${this.key}&waybill=${orderId}`;
-      var url = fileUrl;
+      var url = `https://www.clickpost.in/api/v2/track-order/?username=${this.username}&key=${this.key}&waybill=${orderId}`;
+      // var url = fileUrl;
       getOrder.open("GET", url, true);
       getOrder.onreadystatechange = () =>
       {
@@ -103,9 +103,9 @@ class TrackWidget extends Component{
     if(this.state.orderJSON != null && parseInt(Object.keys(this.state.orderJSON["result"])[0])==this.props.orderId){  //The first part checks if JSON is not empty.  The second part checks if JSON for new orderId has been fetched, the condition fails if the JSON belongs to the previous orderId
       console.log(this.state.orderJSON["result"][`${this.props.orderId}`]);
       var scansArray = [...this.state.orderJSON["result"][`${this.props.orderId}`]["scans"]];
-      var approvalArray = null;
-      var transitionArray = null;
-      var deliveryArray = null;
+      var approvalArray = [];
+      var transitionArray = [];
+      var deliveryArray = [];
 
       //Sorting Array
       scansArray.sort((obj1,obj2)=>{
@@ -134,9 +134,11 @@ class TrackWidget extends Component{
       //Splitting scanArray into approval, transition and delivery arrays
       (function splitArray(){
         console.log("Splitting scanArray");
+        approvalArray = scansArray;
         for(var i =0; i<scansArray.length; i++){
           if(scansArray[i].remark.includes("Picked up")){
             approvalArray = scansArray.splice(0,i+1); //splice affects scansArray itself, therefore need to reset i
+            transitionArray = scansArray;
             i=0;
           }
           if(scansArray[i].remark.includes("Out For Delivery")){
@@ -154,30 +156,32 @@ class TrackWidget extends Component{
           <div id="orderDetailsHeader">Shipment details</div>
           <div id="orderDetails">
             <table>
-                <tr>
-                  <td><strong>From</strong></td>
-                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_name"]}</td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_address"]}</td>
-                </tr>
-                <tr>
-                  <td><strong>To</strong></td>
-                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_name"]}</td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_address"]}</td>
-                </tr>
-                <tr>
-                  <td><strong>Box</strong></td>
-                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["length"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["breadth"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["height"]}cm; {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["weight"]}gm</td>
-                </tr>
-                <tr>
-                  <td><strong>Courier Partner</strong></td>
-                  <td> {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["courier_partner"]}</td>
-                </tr>
+              <tbody>
+                  <tr>
+                    <td><strong>From:</strong></td>
+                    <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_name"]}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["pickup_address"]}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>To:</strong></td>
+                    <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_name"]}</td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["drop_address"]}</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Box:</strong></td>
+                    <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["length"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["breadth"]}x{this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["height"]}cm; {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["weight"]}gm</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Courier Partner:</strong></td>
+                    <td> {this.state.orderJSON["result"][`${this.props.orderId}`]["shipment_detail"]["courier_partner"]}</td>
+                  </tr>
+                </tbody>
             </table>
           </div>
           <div id="trackBarHeaders">
@@ -188,41 +192,43 @@ class TrackWidget extends Component{
           <ul id="trackBar">
             <li id="trackBarApproval">
               <ul>
-                {this.renderOrderScans(approvalArray)}
+                {(approvalArray.length>0)?this.renderOrderScans(approvalArray):null}
               </ul>
             </li>
 
             <li id="trackBarTransition">
               <ul>
-                {this.renderOrderScans(transitionArray)}
+                {(transitionArray.length>0)?this.renderOrderScans(transitionArray):null}
               </ul>
             </li>
 
             <li id="trackBarDelivery">
               <ul>
-                {this.renderOrderScans(deliveryArray)}
+                {(deliveryArray.length>0)?this.renderOrderScans(deliveryArray):null}
               </ul>
             </li>
           </ul>
           <div id="latestStatusHeader">Latest status</div>
           <div id="latestStatus">
             <table>
-              <tr>
-                <td><strong>Type: </strong></td>
-                <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["type"]}</td>
-              </tr>
-              <tr>
-                <td><strong>Status: </strong></td>
-                <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["status"]}</td>
-              </tr>
-              <tr>
-              <td><strong>Time: </strong></td>
-              <td>{ moment.utc(this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["date"]).format("dddd, MMMM Do YYYY, h:mm:ss a")}</td>
-              </tr>
-              <tr>
-              <td><strong>Location: </strong></td>
-              <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["location"]}</td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td><strong>Type: </strong></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["type"]}</td>
+                </tr>
+                <tr>
+                  <td><strong>Status: </strong></td>
+                  <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["status"]}</td>
+                </tr>
+                <tr>
+                <td><strong>Time: </strong></td>
+                <td>{ moment.utc(this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["date"]).format("dddd, MMMM Do YYYY, h:mm:ss a")}</td>
+                </tr>
+                <tr>
+                <td><strong>Location: </strong></td>
+                <td>{this.state.orderJSON["result"][`${this.props.orderId}`]["lateststatus"]["location"]}</td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
