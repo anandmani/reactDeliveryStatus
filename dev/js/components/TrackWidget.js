@@ -2,7 +2,7 @@ import React from 'react';
 import {Component} from 'react';
 import {OverlayTrigger,Popover} from 'react-bootstrap';
 var moment = require ('moment');
-var fileUrl = require('../../../DummyResponse.txt');
+var fileUrl = require('./DummyResponse.txt');
 //----
 // JSON format:
 // meta{}--status
