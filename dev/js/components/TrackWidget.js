@@ -53,8 +53,8 @@ class TrackWidget extends Component{
   fetchJSON(orderId){
       console.log("Making Get Call to Fetch Order Status JSON");
       var getOrder = new XMLHttpRequest();
-      var url = `https://www.clickpost.in/api/v2/track-order/?username=${this.username}&key=${this.key}&waybill=${orderId}`;
-      // var url = fileUrl;
+      // var url = `https://www.clickpost.in/api/v2/track-order/?username=${this.username}&key=${this.key}&waybill=${orderId}`;
+      var url = fileUrl;
       getOrder.open("GET", url, true);
       getOrder.onreadystatechange = () =>
       {
